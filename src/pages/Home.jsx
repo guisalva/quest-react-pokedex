@@ -1,10 +1,17 @@
-import { ThemeToggleButton } from '../components/ThemeToggleButton';
+import styled from 'styled-components';
+import { Header } from '../components/Header';
+import { PokemonGrid } from '../components/PokemonGrid';
 
 export function Home() {
+
   return (
-    <>
-      <ThemeToggleButton />
-      <h1>Home</h1>
-    </>
+    <Main>
+      <Header />
+      <PokemonGrid />
+    </Main>
   );
 };
+
+const Main = styled.main`
+  height: 100%;
+`

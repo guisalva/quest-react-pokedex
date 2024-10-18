@@ -1,5 +1,5 @@
 import { AppRoutes } from './pages/routes';
-import { ThemeProvider } from './contexts/theme-context';
+import { ThemeProvider, ThemeContext } from './contexts/theme-context';
 import { GlobalStyle } from './styles/GlobalStyle';
 
 function App() {

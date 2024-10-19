@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
+import { PokemonCard } from './PokemonCard'
 
 const fetchPokemons = async (limit = 10, offset = 0) => {
   try {
@@ -73,18 +74,8 @@ export function PokemonGrid() {
       <Container>
         {pokemons.length > 0 ? (
           pokemons.map(pokemon => (
-            <Item key={pokemon.id}>
-              <h5>{pokemon.id}</h5>
-              <h3>{pokemon.name}</h3>
-              <img style={{ maxWidth: '100px', maxHeight: '110px'}} src={pokemon.sprite} alt="" />
-
-              {pokemon.types.map(type => (
-                <p key={type}
-                  className={`${type}`}
-                >{type}</p>
-              )
-              )}
-            </Item>)
+            <PokemonCard key={pokemon.id} pokemon={pokemon} />
+          )
           )
         ) : (
           <p>sem pokémons!</p>
@@ -113,14 +104,4 @@ const Container = styled.div`
   grid-template-columns: repeat(5, 1fr);
   grid-auto-rows: auto;
   padding: 20px;
-`;
-
-const Item = styled.div`
-  background-color: #ececec;
-  color: #000;
-  width: 100%;
-  height: 200px;
-  border-radius: 5px;
-  padding: 10px;
-  text-align: center;
 `;

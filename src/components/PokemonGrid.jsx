@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import { PokemonCard } from './PokemonCard'
+import { PokemonCard } from './PokemonCard';
+import { Link } from 'react-router-dom';
 
 const fetchPokemons = async (limit = 10, offset = 0) => {
   try {
@@ -24,10 +25,21 @@ const fetchPokemonMinorDetails = async (url) => {
       id,
       name,
       types: types.map((typeInfo) => typeInfo.type.name),
-      sprite: sprites.other.dream_world.front_default,
+      sprite: sprites.other['official-artwork'].front_default,
     };
   } catch (error) {
     console.error('Erro ao buscar detalhes do pokémon:', error);
+    return null;
+  }
+};
+
+const fetchPokemonsByType = async (type) => {
+  try {
+    const response = await axios.get(`https://pokeapi.co/api/v2/type/${type}`);
+
+    return response.data.pokemon;
+  } catch (error) {
+    console.error('Erro ao buscar os pokémons por tipo:', error);
     return null;
   }
 };
@@ -36,6 +48,7 @@ export function PokemonGrid() {
   const [pokemons, setPokemons] = useState([]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedType, setSelectedType] = useState('');
 
   useEffect(() => {
     const loadInitialPokemons = async () => {
@@ -43,16 +56,38 @@ export function PokemonGrid() {
 
       const initialPokemons = await fetchPokemons();
       const pokemonMinorDetails = await Promise.all(
-        initialPokemons.map(pokemon => fetchPokemonMinorDetails(pokemon.url))
-      )
+        initialPokemons.map((pokemon) => fetchPokemonMinorDetails(pokemon.url))
+      );
       setPokemons(pokemonMinorDetails);
-
-      console.log(pokemons)
 
       setIsLoading(false);
     };
-    loadInitialPokemons();
-  }, []);
+
+    const loadPokemonsByType = async () => {
+      setIsLoading(true);
+
+      const pokemonsByType = await fetchPokemonsByType(selectedType);
+
+      const pokemonByTypeMinorDetails = await Promise.all(
+        pokemonsByType.map((pokemon) => fetchPokemonMinorDetails(pokemon.pokemon.url))
+      );
+
+      console.log(pokemonByTypeMinorDetails);
+      setPokemons(pokemonByTypeMinorDetails);
+
+      setIsLoading(false);
+    };
+
+    if (selectedType !== '') {
+
+      loadPokemonsByType();
+    } else {
+
+      loadInitialPokemons();
+    }
+
+
+  }, [selectedType]);
 
   const loadMorePokemons = async () => {
     if (isLoading) return;
@@ -61,7 +96,7 @@ export function PokemonGrid() {
 
     const newPokemons = await fetchPokemons(10, page * 10);
     const pokemonMinorDetails = await Promise.all(
-      newPokemons.map(pokemon => fetchPokemonMinorDetails(pokemon.url))
+      newPokemons.map((pokemon) => fetchPokemonMinorDetails(pokemon.url))
     );
     setPokemons((prevPokemons) => [...prevPokemons, ...pokemonMinorDetails]);
     setPage((prevPage) => prevPage + 1);
@@ -69,14 +104,30 @@ export function PokemonGrid() {
     setIsLoading(false);
   };
 
+  const handleTypeChange = (event) => {
+    const type = event.target.value;
+    setSelectedType(type);
+  };
+
   return (
     <Main>
+      <label>
+        Filtre por tipo :
+        <select value={selectedType} onChange={handleTypeChange}>
+          <option value=""></option>
+          <option value="1">Fogo</option>
+          <option value="2">Agua</option>
+          <option value="3">Psiquico</option>
+        </select>
+      </label>
+
       <Container>
         {pokemons.length > 0 ? (
-          pokemons.map(pokemon => (
-            <PokemonCard key={pokemon.id} pokemon={pokemon} />
-          )
-          )
+          pokemons.map((pokemon) => (
+            <Link to={`/pokemon/${pokemon.id}`} key={pokemon.id}>
+              <PokemonCard key={pokemon.id} pokemon={pokemon} />
+            </Link>
+          ))
         ) : (
           <p>sem pokémons!</p>
         )}
@@ -96,6 +147,8 @@ const Main = styled.main`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  gap: 20px;
+  padding: 20px;
 `;
 
 const Container = styled.div`
@@ -103,5 +156,4 @@ const Container = styled.div`
   grid-gap: 20px;
   grid-template-columns: repeat(5, 1fr);
   grid-auto-rows: auto;
-  padding: 20px;
 `;

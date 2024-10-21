@@ -13,7 +13,7 @@ export const ThemeToggleButton = () => {
   };
 
   return (
-    <ToggleThemeButton theme={theme} onClick={toggleTheme}>
+    <ToggleThemeButton theme={theme} isDark={theme === themes.dark} onClick={toggleTheme}>
       <div className="thumb">
         <img
           className="theme-icon"

@@ -13,7 +13,7 @@ export const ThemeToggleButton = () => {
   };
 
   return (
-    <ToggleThemeButton theme={theme} isDark={theme === themes.dark} onClick={toggleTheme}>
+    <ToggleThemeButton theme={theme} onClick={toggleTheme}>
       <div className="thumb">
         <img
           className="theme-icon"
@@ -27,8 +27,8 @@ export const ThemeToggleButton = () => {
 
 const ToggleThemeButton = styled.button`
   position: relative;
-  background-color: ${(props) => props.theme.background };
-  border: 1px solid #c9c9c9;
+  background-color: ${(props) => props.theme.surface };
+  border: 2px solid ${(props) => props.theme === themes.dark ? '#313131' : '#e7e7e7'};
   border-radius: 14px;
   height: 28px;
   width: 50px;
@@ -44,7 +44,7 @@ const ToggleThemeButton = styled.button`
     left: 0;
     right: 0;
     transform: translate(15%, -50%)
-      ${(props) => (props.isDark ? 'translateX(110%)' : 'translateX(0)')};
+      ${(props) => (props.theme === themes.dark ? 'translateX(110%)' : 'translateX(0)')};
     background-color: #fff;
     box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.3);
     height: 20px;

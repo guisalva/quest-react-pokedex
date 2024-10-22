@@ -1,12 +1,14 @@
+import { useContext } from 'react';
+import { ThemeContext } from '../contexts/theme-context';
 import styled from 'styled-components';
-import { ThemeToggleButton } from './ThemeToggleButton'
+import PokedexIcon from '../assets/Pokedex-logo.png';
 
 export function Header() {
-  return (
-    <HeaderContainer>
-      <h1>Pokédex</h1>
+  const { theme } = useContext(ThemeContext)
 
-      <ThemeToggleButton />
+  return (
+    <HeaderContainer theme={theme}>
+      <Logo src={PokedexIcon} alt="" />
     </HeaderContainer>
   );
 }
@@ -14,8 +16,9 @@ export function Header() {
 const HeaderContainer = styled.header`
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  background-color: #ff0000;
-  color: #fff;
-  padding: 20px;
+  justify-content: center;
 `;
+
+const Logo = styled.img`
+  height: 80px;
+`

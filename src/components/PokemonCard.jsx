@@ -1,8 +1,12 @@
+import { useContext } from 'react';
 import styled from 'styled-components';
+import { ThemeContext } from '../contexts/theme-context';
 
 export function PokemonCard(props) {
+  const { theme } = useContext(ThemeContext);
+
   return (
-    <Card>
+    <Card theme={theme}>
       <CardShadow className={props.pokemon.types[0]}></CardShadow>
 
       <CardHeader>
@@ -29,8 +33,7 @@ const Card = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background-color: #f8f8f8;
-  color: #000;
+  background-color: ${(props) => props.theme.surface};
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
   width: 100%;
   height: 200px;
@@ -59,7 +62,7 @@ const CardFooter = styled.div`
 const PokemonImg = styled.img`
   max-width: 140px;
   max-height: 130px;
-`
+`;
 
 const PokemonTypeLabel = styled.p`
   font-size: 12px;

@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { PokemonOverview } from '../components/PokemonOverview';
 import { PokemonInfo } from '../components/PokemonInfo';
+import { ThemeContext } from '../contexts/theme-context';
 
 const fetchPokemonDetails = async (id) => {
   try {
@@ -42,6 +43,8 @@ const fetchPokemonDetails = async (id) => {
 };
 
 export function Pokemon() {
+  const { theme } = useContext(ThemeContext);
+
   const [pokemon, setPokemon] = useState(null); // Alterado para null inicialmente
   const [isLoading, setIsLoading] = useState(false);
 
@@ -64,8 +67,12 @@ export function Pokemon() {
   if (!pokemon) return <p>Nenhum pokémon encontrado!</p>;
 
   return (
-    <Main>
-      <BackgroundArt>
+    <Main theme={theme}>
+      <Link to="/">
+        <ReturnButton theme={theme}>Return</ReturnButton>
+      </Link>
+
+      <BackgroundArt theme={theme}>
         <div></div>
       </BackgroundArt>
 
@@ -76,10 +83,13 @@ export function Pokemon() {
 }
 
 const Main = styled.main`
+  position: relative;
   height: 100vh;
   display: flex;
-  position: relative;
   overflow: hidden;
+  background-color: ${(props) => props.theme.background};
+  transition: background 0.3s ease;
+  z-index: 1;
 `;
 
 const BackgroundArt = styled.div`
@@ -88,10 +98,10 @@ const BackgroundArt = styled.div`
   left: 48%;
   width: 100vw;
   height: 105vh;
-  background-color: #ff0000;
+  background-color: ${(props) => props.theme.secondary};
   transform: rotate(2deg);
   transform-origin: center;
-  z-index: -100;
+  z-index: -1;
 
   div {
     position: absolute;
@@ -99,7 +109,29 @@ const BackgroundArt = styled.div`
     left: 3%;
     width: 100vw;
     height: 105vh;
-    background-color: #cc0000;
-    z-index: -99;
+    background-color: ${(props) => props.theme.primary};
+    z-index: -2;
+  }
+`;
+
+const ReturnButton = styled.span`
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  cursor: pointer;
+  margin: 5px;
+  padding: 5px 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: ${(props) => props.theme.primary};
+  border: 2px solid ${(props) => props.theme.primary};
+  border-radius: 20px;
+  z-index: 10;
+  transition: transform 0.3s ease-in-out;
+
+  &:hover {
+    background-color: ${(props) => props.theme.primary};
+    color: ${(props) => props.theme.colorOnPrimary};
+    transform: scale(1.1);
   }
 `;

@@ -16,7 +16,7 @@ export function PokemonInfo(props) {
       </Section>
 
       <h2>Abilities :</h2>
-      <Section style={{ overflowY: 'auto'}}>
+      <Section style={{ overflowY: 'auto' }}>
         {props.pokemon.abilities.map((ability, index) => (
           <AbilityCard key={index}>
             <h4>{ability.ability.name}</h4>
@@ -44,6 +44,18 @@ const Container = styled.div`
     font-weight: bold;
     margin-bottom: 10px;
   }
+
+  @media (min-width: 0px) and (max-width: 469px) {
+    width: 100%;
+    margin-left: 0;
+    padding: 20px;
+  }
+
+  @media (min-width: 470px) and (max-width: 1023px) {
+    width: 100%;
+    margin-left: 0;
+    padding: 20px 40px;
+  }
 `;
 
 const Section = styled.section`
@@ -67,6 +79,10 @@ const Section = styled.section`
 
   &::-webkit-scrollbar-thumb:hover {
     background: #555;
+  }
+
+  @media (max-width: 1023px) {
+    margin-bottom: 40px;
   }
 `;
 

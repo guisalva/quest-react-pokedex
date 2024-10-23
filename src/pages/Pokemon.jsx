@@ -2,9 +2,11 @@ import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { Link, useParams } from 'react-router-dom';
 import styled from 'styled-components';
+import { ThemeContext } from '../contexts/theme-context';
 import { PokemonOverview } from '../components/PokemonOverview';
 import { PokemonInfo } from '../components/PokemonInfo';
-import { ThemeContext } from '../contexts/theme-context';
+import { Loading } from '../components/Loading';
+import { NotFound } from '../components/NotFound';
 
 const fetchPokemonDetails = async (id) => {
   try {
@@ -17,9 +19,17 @@ const fetchPokemonDetails = async (id) => {
         const abilityResponse = await axios.get(abilityURL);
 
         const abilities = abilityResponse.data;
-        const abilityDescription = abilities.effect_entries.find(
+        // Tentar obter o "effect_entries" primeiro
+        let abilityDescription = abilities.effect_entries.find(
           (entry) => entry.language.name === 'en'
         )?.effect;
+
+        // Se não encontrar no "effect_entries", tentar o "flavor_text_entries"
+        if (!abilityDescription) {
+          abilityDescription = abilities.flavor_text_entries.find(
+            (entry) => entry.language.name === 'en'
+          )?.flavor_text;
+        }
 
         return {
           ...abilityObj,
@@ -45,7 +55,7 @@ const fetchPokemonDetails = async (id) => {
 export function Pokemon() {
   const { theme } = useContext(ThemeContext);
 
-  const [pokemon, setPokemon] = useState(null); // Alterado para null inicialmente
+  const [pokemon, setPokemon] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const { id } = useParams();
@@ -62,9 +72,9 @@ export function Pokemon() {
     getPokemon();
   }, [id]);
 
-  if (isLoading) return <p>Carregando...</p>;
+  if (isLoading) return <Loading isOverlay={false} />;
 
-  if (!pokemon) return <p>Nenhum pokémon encontrado!</p>;
+  if (!pokemon) return <NotFound />;
 
   return (
     <Main theme={theme}>
@@ -90,6 +100,12 @@ const Main = styled.main`
   background-color: ${(props) => props.theme.background};
   transition: background 0.3s ease;
   z-index: 1;
+
+  @media (max-width: 1023px) {
+    flex-direction: column;
+    height: auto;
+    padding: 20px 10px;
+  }
 `;
 
 const BackgroundArt = styled.div`
@@ -111,6 +127,17 @@ const BackgroundArt = styled.div`
     height: 105vh;
     background-color: ${(props) => props.theme.primary};
     z-index: -2;
+  }
+
+  @media (max-width: 1023px) {
+    top: 95vh;
+    left: 0;
+    transform: rotate(0);
+    height: 100%;
+
+    div {
+      height: 100%;
+    }
   }
 `;
 

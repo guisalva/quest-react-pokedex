@@ -6,6 +6,8 @@ import { Link } from 'react-router-dom';
 import { ThemeContext } from '../contexts/theme-context';
 import { ThemeToggleButton } from './ThemeToggleButton';
 import { Loading } from './Loading';
+import { CustomSelect } from './CustomSelect';
+import noPokemons from '../assets/error404-no-bg.png';
 
 const fetchPokemons = async (limit = 10, offset = 0) => {
   try {
@@ -39,7 +41,6 @@ const fetchPokemonMinorDetails = async (url) => {
 const fetchPokemonsByType = async (type) => {
   try {
     const response = await axios.get(`https://pokeapi.co/api/v2/type/${type}`);
-
     return response.data.pokemon;
   } catch (error) {
     console.error('Erro ao buscar os pokémons por tipo:', error);
@@ -76,7 +77,7 @@ export function PokemonGrid() {
   const [pokemons, setPokemons] = useState([]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedType, setSelectedType] = useState('');
+  const [selectedType, setSelectedType] = useState(pokemonsTypeArray[0]);
 
   useEffect(() => {
     const loadInitialPokemons = async () => {
@@ -95,17 +96,15 @@ export function PokemonGrid() {
       setIsLoading(true);
 
       const pokemonsByType = await fetchPokemonsByType(selectedType);
-
       const pokemonByTypeMinorDetails = await Promise.all(
         pokemonsByType.map((pokemon) => fetchPokemonMinorDetails(pokemon.pokemon.url))
       );
 
       setPokemons(pokemonByTypeMinorDetails);
-
       setIsLoading(false);
     };
 
-    if (selectedType != 0) {
+    if (selectedType !== 'none') {
       loadPokemonsByType();
     } else {
       loadInitialPokemons();
@@ -115,46 +114,35 @@ export function PokemonGrid() {
   const loadMorePokemons = async () => {
     if (isLoading) return;
 
+    const currentScrollY = window.scrollY;
     setIsLoading(true);
 
     const newPokemons = await fetchPokemons(10, page * 10);
     const pokemonMinorDetails = await Promise.all(
       newPokemons.map((pokemon) => fetchPokemonMinorDetails(pokemon.url))
     );
+
     setPokemons((prevPokemons) => [...prevPokemons, ...pokemonMinorDetails]);
     setPage((prevPage) => prevPage + 1);
 
     setIsLoading(false);
+    window.scrollTo(0, currentScrollY);
   };
 
-  const handleTypeChange = (event) => {
-    const type = event.target.value;
-    setSelectedType(type);
+  const handleTypeChange = (selectedType) => {
+    setSelectedType(selectedType);
   };
-
-  if (isLoading) {
-    return (
-      <>
-        <Loading />
-      </>
-    );
-  }
 
   return (
     <Main theme={theme}>
+      {isLoading && <Loading isOverlay={true} />}
+
       <Container>
         <Buttons theme={theme}>
           <label>
             Filter by type :
-            <TypeSelect theme={theme} value={selectedType} onChange={handleTypeChange}>
-              {pokemonsTypeArray.map((type, index) => (
-                <option key={index} value={index}>
-                  {type}
-                </option>
-              ))}
-            </TypeSelect>
+            <CustomSelect options={pokemonsTypeArray} onSelect={handleTypeChange} />
           </label>
-
           <ThemeToggleButton />
         </Buttons>
 
@@ -166,13 +154,16 @@ export function PokemonGrid() {
               </Link>
             ))
           ) : (
-            <p>sem pokémons!</p>
+            <PokemonError theme={theme}>
+              <h3>No Pokemons!</h3>
+              <img src={noPokemons} />
+            </PokemonError>
           )}
         </Grid>
 
         {pokemons.length > 0 && (
           <LoadButton theme={theme} onClick={loadMorePokemons} disabled={isLoading}>
-            {isLoading ? 'Carregando...' : 'Carregar mais'}
+            {isLoading ? 'Loading...' : 'Load More'}
           </LoadButton>
         )}
       </Container>
@@ -198,7 +189,7 @@ const Container = styled.div`
 const Buttons = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: start;
+  align-items: center;
 
   label {
     font-size: 14px;
@@ -207,22 +198,10 @@ const Buttons = styled.div`
   }
 `;
 
-const TypeSelect = styled.select`
-  background-color: ${(props) => props.theme.surface};
-  color: ${(props) => props.theme.colorOnBackground};
-  margin-left: 10px;
-  padding: 2px 5px;
-  border-radius: 4px;
-
-  &:focus-visible {
-    outline: none;
-  }
-`;
-
 const Grid = styled.div`
   display: grid;
   grid-gap: 15px;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(1, 1fr);
   grid-auto-rows: auto;
   z-index: 1;
 
@@ -232,6 +211,22 @@ const Grid = styled.div`
 
   & a:hover {
     transform: scale(1.07);
+  }
+
+  @media (min-width: 401px) and (max-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 641px) and (max-width: 800px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (min-width: 801px) and (max-width: 1024px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  @media (min-width: 1025px) {
+    grid-template-columns: repeat(5, 1fr);
   }
 `;
 
@@ -252,4 +247,17 @@ const LoadButton = styled.button`
     background-color: ${(props) => props.theme.primary};
     transform: scale(1.1);
   }
+`;
+
+const PokemonError = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  color: ${(props) => props.theme.colorOnBackground};
 `;

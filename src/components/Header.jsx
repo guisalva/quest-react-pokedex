@@ -21,4 +21,8 @@ const HeaderContainer = styled.header`
 
 const Logo = styled.img`
   height: 80px;
+
+  @media (max-width: 1024px) {
+    height: 60px;
+  }
 `

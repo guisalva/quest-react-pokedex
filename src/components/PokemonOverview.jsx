@@ -14,7 +14,7 @@ export function PokemonOverview(props) {
         alt={props.pokemon.name}
       />
 
-      <div>
+      <div className="pokemon-types">
         {props.pokemon.types.map((typeInfo, index) => (
           <p key={index} className={`${typeInfo.type.name}`}>
             {typeInfo.type.name}
@@ -48,5 +48,45 @@ const Container = styled.div`
     font-weight: 500;
     display: flex;
     gap: 20px;
+  }
+
+  @media (max-width: 320px) {
+    img {
+      max-height: 300px;
+    }
+  }
+
+  @media (min-width: 321px) and (max-width: 424px) {
+    margin: 0 auto;
+
+    img {
+      max-height: 300px;
+    }
+  }
+
+  @media (min-width: 425px) and (max-width: 767px) {
+    gap: 10px;
+
+    img {
+      max-height: 320px;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) {
+    height: 90vh;
+    margin: 0 auto;
+
+    img {
+      max-height: 350px;
+    }
+  }
+
+  @media (max-width: 1023px) {
+    margin: 0 auto;
+    height: 95vh;
+
+    .pokemon-types {
+      padding-bottom: 20px;
+    }
   }
 `;

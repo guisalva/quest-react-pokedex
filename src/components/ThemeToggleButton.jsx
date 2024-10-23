@@ -27,11 +27,11 @@ export const ThemeToggleButton = () => {
 
 const ToggleThemeButton = styled.button`
   position: relative;
-  background-color: ${(props) => props.theme.surface };
-  border: 2px solid ${(props) => props.theme === themes.dark ? '#313131' : '#e7e7e7'};
-  border-radius: 14px;
-  height: 28px;
-  width: 50px;
+  background-color: ${(props) => props.theme.background };
+  border: 2px solid ${(props) =>  props.theme.colorOnBackground };
+  border-radius: 20px;
+  height: 40px;
+  width: 60px;
   transition: background-color 0.3s ease;
   cursor: pointer;
 
@@ -43,17 +43,21 @@ const ToggleThemeButton = styled.button`
     top: 50%;
     left: 0;
     right: 0;
-    transform: translate(15%, -50%)
-      ${(props) => (props.theme === themes.dark ? 'translateX(110%)' : 'translateX(0)')};
+    transform: translate(10%, -50%)
+      ${(props) => (props.theme === themes.dark ? 'translateX(65%)' : 'translateX(0)')};
     background-color: #fff;
     box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.3);
-    height: 20px;
-    width: 20px;
+    height: 30px;
+    width: 30px;
     border-radius: 50%;
     transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out;
+
+    ${(props) => props.theme === themes.light && css`
+      border: 2px solid ${props.theme.colorOnBackground};
+    `}
   }
 
   .theme-icon {
-    max-width: 16px;
+    max-width: 22px;
   }
 `;

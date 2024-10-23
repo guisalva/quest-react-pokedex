@@ -34,7 +34,7 @@ const Card = styled.div`
   flex-direction: column;
   justify-content: space-between;
   background-color: ${(props) => props.theme.surface};
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   width: 100%;
   height: 200px;
   border-radius: 10px;

@@ -1,11 +1,15 @@
 import styled from 'styled-components';
-import pokeballImg from '../assets/pokeball.png'; // Certifique-se de ajustar o caminho para a imagem da Pokébola
+import pokeballImg from '../assets/pokeball.png';
+import { useContext } from 'react';
+import { ThemeContext } from '../contexts/theme-context';
 
-export function Loading() {
+export function Loading(props) {
+  const { theme } = useContext(ThemeContext);
+
   return (
-    <LoadingContainer>
-      <Pokeball src={pokeballImg} alt="Pokébola" />
-      <LoadingText>CARREGANDO</LoadingText>
+    <LoadingContainer theme={theme} isOverlay={props.isOverlay}>
+      <Pokeball src={pokeballImg} alt="Pokeball" />
+      <LoadingText>LOADING</LoadingText>
     </LoadingContainer>
   );
 }
@@ -15,8 +19,9 @@ const LoadingContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.7); /* Fundo semi-transparente */
+  max-height: 100vh;
+  height: 100%;
+  background-color: ${(props) => (props.isOverlay ? 'rgba(0, 0, 0, 0.7)' : props.theme.background)};
   color: white;
   text-align: center;
   z-index: 100;
@@ -31,7 +36,7 @@ const Pokeball = styled.img`
   width: 80px;
   height: 80px;
   margin-bottom: 20px;
-  animation: spin 1s linear infinite; /* Adiciona animação de rotação */
+  animation: spin 1s linear infinite;
 
   @keyframes spin {
     0% {

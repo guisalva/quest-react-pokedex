@@ -74,6 +74,6 @@ npm run dev
 
 <br />
 
-Abra o navegador e acesse a aplicação pelo endereço http://localhost:5173/ ou por outra porta caso esta já esteja em uso na máquina,
+Abra o navegador e acesse a aplicação pelo endereço http://localhost:5173/ ou por outra porta caso esta já esteja em uso na máquina.
 
 ---
